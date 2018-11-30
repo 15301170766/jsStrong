@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>js加强</title>
+</head>
+<body>
+    <h1>js六大类型</h1>
+    <p>1.五大基本类型：Number、String、boolean、Null、undefined</p>
+    <p>2.复合类型：object</p>
+    <h2>js判断数据类型的两种方法</h2>
+    <p>方法一：使用typeof()判断数据类型。（但是无法区分null、{}、[]统一返回object）<button id="action1">方法一</button></p>
+    <script>
+        window.onload=function(){
+            let ActionBtn1 = document.querySelector("#action1");
+            ActionBtn1.onclick=function(){
+                console.log(typeof(null));
+                console.log(typeof('666'));
+                console.log(typeof(Boolean));
+                console.log(typeof(undefined));
+                console.log(typeof(1111));
+                console.log(typeof({}));
+                console.log(typeof([]));
+            }
+        }
+    </script>
+    <p>方法二：使用Object.prototype.toString.call对象的原生原型扩展函数<button id="action2">方法二</button></p>
+    <p>区分null、{}、[]三种数据类型</p>
+    <script>
+      window.onload=function(){
+        let ActionBtn2 = document.querySelector("#action2");
+        ActionBtn2.onclick=function(){
+            let Gettype = Object.prototype.toString;
+         console.log(Gettype.call(null));
+         console.log(Gettype.call([]));
+         console.log(Gettype.call({}));
+         console.log(Gettype.call('66'));
+         console.log(Gettype.call(66));
+        };
+      }
+    </script>
+
+</body>
+</html>

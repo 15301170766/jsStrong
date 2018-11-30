@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>js事件委托（事件代理）</title>
+    <style>
+        .demo {
+            width: 500px;
+            height: 200px;
+            background: pink;
+        }
+
+        .demo li {
+            border: 1px solid red;
+        }
+    </style>
+</head>
+
+<body>
+    查阅地址：<a href="https://www.cnblogs.com/liugang-vip/p/5616484.html">https://www.cnblogs.com/liugang-vip/p/5616484.html</a>
+    <pre>
+        事件委托：
+            1.当dom元素有多个重复事件时，渲染dom节点事件会过于消耗内存，此时我们将这些个事件委托给她们父节点<br>
+            2.当多个不同dom节点有相同类型的不同任务的事件，我们也可以通过事件委托，通过target属性，返回事件的目标节点。
+    </pre>
+    <p>注释：Event对象提供了一个属性叫target，可以返回事件的目标节点，我们成为事件源，也就是说，target就可以表示为当前的事件操作的dom，<br>
+        但是不是真正操作dom，当然，这个是有兼容性的，标准浏览器用ev.target，IE浏览器用event.srcElement，此时只是获取了当前节点的位置，<br>
+        并不知道是什么节点名称，这里我们用nodeName来获取具体是什么标签名，这个返回的是一个大写的，我们需要转成小写再做比较<br>
+    </p>
+    <p>当用事件委托的时候，根本就不需要去遍历元素的子节点，只需要给父级元素添加事件就好了，其他的都是在js里面的执行，这样可以大大的减少dom操作，这才是事件委托的精髓所在。</p>
+    <pre>
+            　var ev = ev || window.event;
+            　　　　var target = ev.target || ev.srcElement;
+            　　　　if(target.nodeName.toLowerCase() == 'li'){
+            　 　　　　　　	alert(123);
+            　　　　　　　  alert(target.innerHTML);
+            　　　　}
+
+            那什么样的事件可以用事件委托，什么样的事件不可以用呢？
+
+适合用事件委托的事件：click，mousedown，mouseup，keydown，keyup，keypress。
+
+值得注意的是，mouseover和mouseout虽然也有事件冒泡，但是处理它们的时候需要特别的注意，因为需要经常计算它们的位置，处理起来不太容易。
+
+不适合的就有很多了，举个例子，mousemove，每次都要计算它的位置，非常不好把控，在不如说focus，blur之类的，本身就没用冒泡的特性，自然就不能用事件委托了。
+    </pre>
+
+    <p>demo1:多个重复事件委托给父级</p>
+    <div class="demo1 demo">
+        <ul class="demo11 ">
+            <li>1</li>
+            <li>2</li>
+            <li>3</li>
+            <li>4</li>
+            <li>5</li>
+        </ul>
+    </div>
+    <script>
+        let Demo1 = document.querySelector(".demo11");
+        Demo1.onclick = function () {
+            alert(123);
+        }
+    </script>
+    <p>demo2:委托事件跟直接子节点上的事件效果一样，每个节点弹出的事件有差异</p>
+    <div class="demo2 demo">
+        <ul class="demo22">
+            <li>1</li>
+            <li>2</li>
+            <li>3</li>
+            <li>4</li>
+            <li>5</li>
+        </ul>
+    </div>
+    <script>
+        let Demo2 = document.querySelector(".demo22");
+        Demo2.onclick = function (ev) {
+            var ev = ev || window.event;//此处不能用let
+            var target = ev.target || ev.srcElement;
+            if (target.nodeName == 'LI') {
+                alert(target.innerHTML)
+            }
+        }
+    </script>
+    <p>demo3:委托事件跟直接子节点上的事件效果一样，每个节点弹出的事件有差异</p>
+    <div class="demo3 demo">
+        <button id="add">1</button>
+        <button id="remove">2</button>
+        <button id="move">3</button>
+        <button id="select">4</button>
+    </div>
+    <script>
+        let Demo3 = document.querySelector(".demo3");
+        Demo3.onclick = function (ev) {
+            var ev = ev || window.event;//此处不能用let
+            var target = ev.target || ev.srcElement;
+            if (target.nodeName.toLocaleLowerCase() == 'button') {
+                switch (target.id) {
+                    case 'add':
+                        alert('添加');
+                        break;
+                    case 'remove':
+                        alert('删除');
+                        break;
+                    case 'move':
+                        alert('移动');
+                        break;
+                    case 'select':
+                        alert('选择');
+                        break;
+                }
+            }
+        }
+    </script>
+
+    <p>demo4:委托事件使新增的子节点元素同样能有事件</p>
+    <div class="demo4 demo">
+        <ul class="demo44">
+            <li>1</li>
+            <li>2</li>
+            <li>3</li>
+            <li>4</li>
+            <li>5</li>
+        </ul>
+        <button id="AddNew">添加新元素</button>
+    </div>
+    <script>
+        let Demo4 = document.querySelector(".demo44");
+        Demo4.onmouseover = function (ev) {
+            var ev = ev || window.event;//此处不能用let
+            var target = ev.target || ev.srcElement;
+            if (target.nodeName.toLocaleLowerCase() == 'li') {
+                target.style.background = 'red';
+            }
+        }
+        Demo4.onmouseout = function (ev) {
+            var ev = ev || window.event;//此处不能用let
+            var target = ev.target || ev.srcElement;
+            if (target.nodeName.toLocaleLowerCase() == 'li') {
+                target.style.background = 'white';
+
+            }
+        }
+        let AddLi = document.querySelector("#AddNew");
+        let num = Demo4.querySelectorAll("li").length;
+        // alert(num);
+        AddLi.onclick = function () {
+            num++;
+            let Oli = document.createElement('li');
+            Oli.innerHTML = num;
+            Demo4.appendChild(Oli);
+        }
+    </script>
+    <p>问题升级版：如果子节点属于不同标签，无法通过单独的一个input、li等来判断时，如何委托事件</p>
+    <ul id="test">
+        <li>
+            <p>11111111111</p>
+        </li>
+        <li>
+            <div>222222
+            </div>
+        </li>
+        <li>
+            <span>3333333333</span>
+        </li>
+        <li>4444444</li>
+    </ul>
+    <script>
+        var oUl = document.getElementById('test');
+        oUl.addEventListener('click', function (ev) {
+            var target = ev.target;
+            while (target !== oUl) {
+                if (target.tagName.toLowerCase() == 'li') {
+                    console.log('li click~');
+                    break;
+                }
+                target = target.parentNode;
+            }
+        })
+    </script>
+</body>
+
+</html>
